@@ -2,11 +2,36 @@
 **C++ STL示例代码**
 
 01. sort() 排序  
-02. stable_sort() 排序（稳定）  
-03. partial_sort() 获取最大/小的指定数量的元素，例如100000个数字中最大的10个  
+	```cpp
+	vector<string> vs = {"china", "usa", "japan", "germany", "france", "england", "india"};  
+	sort(vs.begin(), vs.end());  
+	vector<int> v = {56, 33, 98, 26, 43, 100, 12, 51, 6, 10, 88};  
+	sort(v.begin(), v.end(), greater<int>());  
+	```  
+02. stable_sort() 排序（稳定），与sort的使用方法相同。  
+03. partial_sort() 获取最大/小的指定数量的元素，例如100000个数字中最大的10个   
+	partial_sort() 函数会以交换元素存储位置的方式实现部分排序的。具体来说，partial_sort() 会将范围内最小（或最大）的指定数量个元素移动到前面，并对这部分元素做升序（或降序）排序。例如将100000个数字的最大的10个移动到最前面的位置。  
+	```cpp
+	vector<int> v = {56, 33, 98, 26, 43, 100, 12, 51, 6, 10, 88};  
+	partial_sort(v.begin(), v.begin()+3, v.end());  
+	```  
+	partial_sort_copy() 函数的功能和 partial_sort() 类似，唯一的区别在于，它不会对原有数据做任何变动，而是先将选定的部分元素拷贝到另外指定的数组或容器中，然后再对这部分元素进行排序。  
+	```cpp
+	vector<int> result(3);  
+	partial_sort_copy(v.begin(), v.end(), result.begin(), result.begin()+3);
+	```  
 04. nth_element() 找到第几大/小的元素，例如100000个数字中第10大的元素  
+	```cpp
+	//nth_element函数会将你指定的第 nth个位置的元素放到它排序后应该在的位置，如果是第3小的数，那么会被放在[2]的位置上。  
+	nth_element(v.begin(), v.begin()+2, v.end());  
+	```  
 05. is_sorted() 判断容器中的元素是否有序  
 	is_sorted_until() 判断容器中的元素是否有序，返回一个迭代器：如果有序返回end()，如果无序返回指向第一个破坏有序性的元素的迭代器  
+	```cpp
+	vector<int> v = {56, 33, 98, 26, 43, 100, 12, 51, 6, 10, 88};
+	bool ok = is_sorted(v.begin(), v.end());
+	cout << "数组是否排序：" << (ok?"是":"否") << endl;
+	```  
 06. 如何选择排序函数？  
 	当需要对普通数组或者 array、vector 或者 deque 容器中的元素进行排序时，怎样选择最合适（效率最高）的排序函数：  
 	如果需要对所有元素进行排序，则选择 sort() 或者 stable_sort() 函数；  
@@ -15,9 +40,22 @@
 	如果只需要找到最大或最小的 n 个元素，但不要求对这 n 个元素进行排序，则优先选择 nth_element() 函数。  
 	四个函数性能之间的比较：nth_element() > partial_sort() > sort() > stable_sort()       <--从左到右，性能由高到低  
 08. merge() 将 2 个有序序列合并为 1 个有序序列，前提是这 2 个有序序列的排序规则相同（要么都是升序，要么都是降序）。得到的新有序序列的排序规则和这 2 个有序序列相同。  
+	```cpp
+	vector<int> result(100); //开辟一个足够大的vector，用来存储合并后的结果  
+	int a1[] = {1, 7, 11, 15, 35};  
+	int a2[] = {3, 8, 12, 28, 33, 39};  
+ 	auto resultEnd = merge(a1, a1+5, a2, a2+6, result.begin());
+	```  
 	inplace_merge() 当 2 个有序序列存储在同一个数组或容器中时，如果想将它们合并为 1 个有序序列，更推荐使用 inplace_merge() 函数  
-09. find() 用于在指定范围内查找和目标元素值相等的第一个元素
-	例：auto it = find(v.begin(), v.end(), 15);
+	```cpp
+	int a[] = {1, 7, 11, 15, 35, 3, 8, 12, 28, 33, 39};
+	inplace_merge(a, a+5, a+11);
+	```  
+09. find() 用于在指定范围内查找和目标元素值相等的第一个元素，该函数会返回一个迭代器，当 find() 函数查找成功时，其指向的是查找到的第一个目标元素；如果查找失败，则该迭代器的指向end。
+	```cpp
+	vector<int> v = {1, 7, 11, 15, 35, 3, 8, 12, 28, 33, 39};
+	auto it = find(v.begin(), v.end(), 15);
+	```
 10. 手动编写循环结构和调用 STL 算法函数相比，哪种实现方式更好呢？毫无疑问，直接调用算法会更好，理由有以下几个：  
 	算法函数通常比自己写的循环结构效率更高；  
 	自己写循环比使用算法函数更容易出错；  
@@ -111,5 +149,5 @@
 	vector<int> v = {1, 2, 3, 4, 4, 4, 4, 5, 9, 10, 21, 40, 60, 80}; 
 	bool isExist = binary_search(v.begin(), v.end(), num);
 	cout << "是否存在" << num << "这个元素：" << (isExist?"是":"否") << endl;
-	```
-	** find()、find_if()、search()等函数的底层实现都采用的是顺序查找（逐个遍历）的方式，在某些场景中的执行效率并不高。例如，当指定区域内的数据处于有序状态时，如果想查找某个目标元素，更推荐使用二分查找的方法（相比顺序查找，二分查找的执行效率更高），lower_bound、upper_bound、equel_range、binary_search这 4 个查找函数，它们的底层实现采用的都是二分查找的方式 **
+	```	**find()、find_if()、search()等函数的底层实现都采用的是顺序查找（逐个遍历）的方式，在某些场景中的执行效率并不高。例如，当指定区域内的数据处于有序状态时，如果想查找某个目标元素，更推荐使用二分查找的方法（相比顺序查找，二分查找的执行效率更高），lower_bound、upper_bound、equel_range、binary_search这 4 个查找函数，它们的底层实现采用的都是二分查找的方式**
+	
