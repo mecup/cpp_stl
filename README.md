@@ -151,3 +151,242 @@
 	cout << "是否存在" << num << "这个元素：" << (isExist?"是":"否") << endl;
 	```  	
 	**find()、find_if()、search()等函数的底层实现都采用的是顺序查找（逐个遍历）的方式，在某些场景中的执行效率并不高。例如，当指定区域内的数据处于有序状态时，如果想查找某个目标元素，更推荐使用二分查找的方法（相比顺序查找，二分查找的执行效率更高），lower_bound、upper_bound、equel_range、binary_search这 4 个查找函数，它们的底层实现采用的都是二分查找的方式**
+	
+25. all_of() 算法会返回 true，前提是序列中的所有元素都可以使谓词返回 true。  
+	any_of() 算法会返回 true，前提是序列中的任意一个元素都可以使谓词返回 true。  
+	none_of() 算法会返回 true，前提是序列中没有元素可以使谓词返回 true。  
+	```cpp
+	bool cmp(int n)	{return n > 10;}  
+	vector<int> v = {1, 2, 3, 4, 4, 4, 4, 5, 9, 10, 21, 40, 60, 80};   
+	bool isAll = all_of(v.begin(), v.end(), cmp);  
+	cout << "所有元素都大于10：" << (isAll?"是":"否") << endl;  
+	bool isAny = any_of(v.begin(), v.end(), cmp);  
+	cout << "至少有一个元素大于10：" << (isAny?"是":"否") << endl;  
+	bool isNone = none_of(v.begin(), v.end(), cmp);  
+	cout << "没有元素大于10：" << (isNone?"是":"否") << endl;  
+	```  
+26. 如果两个序列的长度相同，并且对应元素都相等，equal() 算法会返回 true  
+	```cpp
+	vector<int> v1 = {1, 2, 3, 4, 4, 4, 4, 5, 9, 10, 21, 40, 60, 80};   
+	vector<int> v2 = {1, 2, 3, 4, 4, 4, 4, 5, 9, 10, 21, 40, 60, 80};   
+	bool ok = equal(v1.begin(), v1.end(), v2.begin(), v2.end());  
+	cout << (ok?"v1 与 v2 内容完全相同" : "v1 与 v2 内容不相同") << endl;  
+	```  
+27. equal() 算法可以告诉我们两个序列是否匹配。mismatch() 算法也可以告诉我们两个序列是否匹配，而且如果不匹配，它还能告诉我们不匹配的位置。
+	mismatch() 返回一个pair，pair 包含的迭代器指向第一对不匹配的元素。如果完全匹配，那么pair返回的就是两个序列的end位置
+	```cpp
+	vector<int> v1 = {1, 2, 3, 4, 4, 5, 5, 5, 9, 10, 21, 40, 60, 80};   
+	vector<int> v2 = {1, 2, 3, 4, 4, 5, 5, 5, 9, 10, 21, 40, 60, 80, 90};   
+	auto it = mismatch(v1.begin(), v1.end(), v2.begin(), v2.end());  
+	if (it.first == v1.end() && it.second == v2.end()){  
+		cout << "v1 与 v2 内容完全相同" << endl;  
+	}  
+	else {  
+		cout << "v1 与 v2 内容的第一处差异出现在：" << endl;  
+		cout << "v1 的第" << (it.first - v1.begin()) << "个字符处，内容为：" << *it.first << endl;   
+		cout << "v2 的第" << (it.second - v2.begin()) << "个字符处，内容为：" << *it.second << endl;   
+	}  
+	```  
+28. lexicographical_compare比较两个序列的字典序排列大小  
+	如果第一个序列的字典序小于第二个，这个算法会返回 true，否则返回 false  
+	```cpp  
+	vector<int> v1 = {1, 2, 3, 4, 4, 4, 5, 5, 9, 10, 21, 40, 60, 80};     
+	vector<int> v2 = {1, 2, 3, 4, 4, 5, 5, 5, 9, 10, 21, 40, 60, 80};   
+	bool ret = lexicographical_compare(v1.begin(), v1.end(), v2.begin(), v2.end());  
+	cout << "比较结果：" << (ret?"true":"false") << endl;  
+	
+	vector<string> s1 = {"the", "cat", "is", "red"};  
+	vector<string> s2 = {"the", "dog", "is", "yellow"};  
+	ret = lexicographical_compare(s1.begin(), s1.end(), s2.begin(), s2.end());  
+	cout << "比较结果：" << (ret?"true":"false") << endl;  
+	```  
+29. next_permutation() 会生成一个序列的重排列，它是所有可能的字典序中的下一个排列，默认使用 < 运算符来做这些事情。  
+	它的参数为定义序列的迭代器和一个返回布尔值的函数，这个函数在下一个排列大于上一个排列时返回 true，如果上一个排列是序列中最大的，它返回 false，所以会生成字典序最小的排列。  
+	```cpp
+	vector<int> v = {2, 1, 3, 4};    
+	do {   
+		printVector(v); //一个自定义函数，打印vector的内容   
+	}   
+	while(next_permutation(v.begin(), v.end()));   
+	```   
+30. prev_permutation() 会生成一个序列的重排列，它是所有可能的字典序中的上一个排列，默认使用 < 运算符来做这些事情。  
+	next_permutation() 是按照字典升序的方式生成的排列。当我们想以降序的方式生成排列时，可以使用 prev_permutation()。  
+31. is_permutation() 算法可以用来检查一个序列是不是另一个序列的排列，如果是，会返回 true。  
+	```cpp  
+	vector<int> v1 = {2, 1, 3, 4};  
+	vector<int> v2 = {4, 2, 3, 1};    
+	bool ok = is_permutation(v1.begin(), v1.end(), v2.begin(), v2.end());  
+	cout << "v2是v1的一个排列：" << (ok?"true":"false") << endl;  
+	```  
+32. copy_n() 算法可以从源容器复制指定个数的元素到目的容器中。  
+	第一个参数是指向第一个源元素的输入迭代器，第二个参数是需要复制的元素的个数，第三个参数是指向目的容器的第一个位置的迭代器。  
+	这个算法会返回一个指向最后一个被复制元素的后一个位置的迭代器  
+	```cpp  
+	vector<int> v1 = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};   
+	vector<int> v2 = {55, 55, 55, 55};   
+	copy_n(v2.begin(), v2.size(), v1.begin() + 3);  
+	```  
+33. copy() 算法可以将元素从源序列复制到目标序列。    
+	前两个参数定义源序列的输入迭代器，第三个参数是指向目的序列的第一个位置的输出迭代器  
+	函数会返回一个输出迭代器，它指向最后一个被复制元素的下一个位置。  
+	```cpp  
+	vector<int> v1 = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};   
+	vector<int> v2 = {55, 66, 77, 88};   
+	auto it = copy(v2.begin(), v2.end(), v1.begin() + 3);  
+	```  
+	copy_if() 算法可以从源序列复制使谓词返回 true 的元素，copy_if相当于在copy()的基础上，增加了一个过滤器，只有符合条件的元素才会被拷贝。  
+	```cpp  
+	bool cmp(int n){return n%2 == 0;}  
+	vector<int> v1 = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};   
+	vector<int> v2 = {55, 66, 77, 88};   
+	copy_if(v2.begin(), v2.end(), v1.begin() + 3, cmp);  
+	```  
+34. 像 copy() 那样复制元素，但是从最后一个元素开始复制，最后复制第一个元素。  
+	copy_backward() 会复制前两个迭代器参数指定的序列。第三个参数是目的序列的结束迭代器end（注意不是起始迭代器begin）  
+	copy_backward()一般用于源地址和目的地址有重复，且元素向后复制的情况  
+	```cpp
+	vector<int> v = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};   
+	auto it = copy_backward(v.begin(), v.begin() + 8, v.end());  
+	```  
+35. reverse_copy() 算法可以将源序列复制到目的序列中，目的序列中的元素是逆序的。定义源序列的前两个迭代器参数必须是双向迭代器。目的序列由第三个参数指定，它是目的序列的开始迭代器  
+	这个算法会返回一个输出迭代器，它指向目的序列最后一个元素的下一个位置  
+	如果是要对容器内容原地逆序，更好的选择是reverse()   
+	```cpp  
+	vector<int> v = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};   
+	vector<int> v2(20);  
+	auto it = reverse_copy(v.begin(), v.end(), v2.begin());  
+	```  
+36. unique() 算法可以在序列中原地移除重复的元素，这就要求被处理的序列必须是正向迭代器所指定的。  
+	在移除重复元素后，它会返回一个正向迭代器作为新序列的结束迭代器。可以提供一个函数对象作为可选的第三个参数，这个参数会定义一个用来代替 == 比较元素的方法。  
+	```cpp  
+	vector<int> v = {1, 2, 3, 3, 5, 6, 6, 8, 9, 9, 0};   
+	auto it = unique(v.begin(), v.end());  
+	```  
+37. rotate() 算法可以旋转容器中的元素序列  
+	第一个参数是这个序列的开始迭代器；第二个参数是指向新的第一个元素的迭代器，它必定在序列之内。第三个参数是这个序列的结束迭代器。  
+	元素的圆形序列会被维持，因此可以有效地旋转元素环，直到新的第一个元素成为序列的开始。这个算法会返回一个迭代器，它指向原始的第一个元素所在的新位置。  
+	```cpp  
+	vector<int> v = {1, 2, 3, 4, 5, 6, 7, 8, 9, 0};   
+	auto it = rotate(v.begin(), v.begin() + 2, v.end());  
+	v = {1, 2, 3, 4, 5, 6, 7, 8, 9, 0};   
+	it = rotate(v.begin(), v.end() - 2, v.end());  
+	```  
+38. rotate_copy() 算法会在新序列中生成一个序列的旋转副本，并保持原序列不变。rotate_copy() 的前 3 个参数和 copy() 是相同的；第 4 个参数是一个输出迭代器，它指向目的序列的第一个元素。  
+	这个算法会返回一个目的序列的输出迭代器，它指向最后一个被复制元素的下一个位置。  
+	```cpp  
+	vector<int> v = {1, 2, 3, 4, 5, 6, 7, 8, 9, 0};   
+	vector<int> v2(v.size());  //将旋转后的结果复制到这里  
+	auto it = rotate_copy(v.begin(), v.begin() + 2, v.end(), v2.begin());  
+	```  
+39. move() 算法会将它的前两个输入迭代器参数指定的序列移到第三个参数定义的目的序列的开始位置，第三个参数必须是输出迭代器。  
+	这个算法返回的迭代器指向最后一个被移动到目的序列的元素的下一个位置。  
+	std::move算法（定义在 <algorithm>头文件中）的核心价值在于：  
+	当处理支持移动语义的类型（如 std::string、std::vector或自定义包含资源的类）时，它可以通过转移资源所有权而非复制数据来显著提升性能。  
+	对基本类型无效：int、double等简单类型没有动态资源，移动与拷贝开销相同，使用 std::move无性能收益。  
+	```cpp  
+	vector<string> vs = {"hello", "world", "you", "are", "good"};   
+	vector<string> result(vs.size());    
+	auto it = move(vs.begin(), vs.end(), result.begin());  
+	```  
+40. std::swap_ranges用于交换两个序列中指定范围内的元素。它需要三个迭代器参数：第一个序列的起止迭代器，以及第二个序列的起始迭代器。它会逐个交换对应位置上的元素，因此时间复杂度是线性的O(N)  
+	当需要交换两个完整容器的所有内容时，优先使用 std::swap。特别是对于STL容器，它的效率极高（O(1)）  
+	当只需要交换容器或数组中的一部分元素，或者需要在两个不同类别的容器（如 vector和 deque）之间交换元素时，使用 std::swap_ranges  
+	```cpp  
+	vector<int> v1 = {1, 2, 3, 4, 5};   
+	vector<int> v2 = {100, 200, 300, 400, 500};   
+	swap_ranges(v1.begin(), v1.begin() + 3, v2.begin());  
+	```   
+41. 如果不知道具体的场景，即元素保存在什么样的容器中，是不能从序列中移除元素的。  
+	因此，“移除元素的”算法也无法做到这一点，它们只会重写被选择的元素或者忽略复制的元素。移除操作不会改变被“移除”元素的序列的元素个数。  
+	有 4 种移除算法：  
+	remove() 可以从它的前两个正向迭代器参数指定的序列中移除和第三个参数相等的对象。  
+	基本上每个元素都是通过用它后面的元素覆盖它来实现移除的。它会返回一个指向新的最后一个元素之后的位置的迭代器。  
+	remove_copy() 可以将前两个正向迭代器参数指定的序列中的元素复制到第三个参数指定的目的序列中，并忽略和第 4 个参数相等的元素。 它返回一个指向最后一个被复制到目的序列的元素的后一个位置的迭代器。序列不能是重叠的。  
+	remove_if() 可以从前两个正向迭代器指定的序列中移除能够使作为第三个参数的谓词返回 true 的元素。   
+	remove_copy_if() 可以将前两个正向迭代器参数指定的序列中，能够使作为第 4 个参数的谓词返回 true 的元素，复制到第三个参数指定的目的序列中。    
+	它返回一个指向最后一个被复制到目的序列的元素的后一个位置的迭代器。序列不能是重叠的。  
+	```cpp  
+	cout << "========== remove ===========" << endl;  
+	vector<int> v = {1, 2, 5, 4, 5, 5, 5, 8, 9, 10, 11, 12};   
+	auto it = remove(v.begin(), v.end(), 5);  
+	printVector(v); //自定义函数，打印vector的内容  
+	cout << "返回的it位置(v)：" << it - v.begin() << endl;  
+	
+	cout << "========== remove_copy ===========" << endl;  
+	v = {1, 2, 5, 4, 5, 5, 5, 8, 9, 10, 11, 12};   
+	vector<int> v2(10);  
+	it = remove_copy(v.begin(), v.end(), v2.begin(), 5);  
+	printVector(v2); //自定义函数，打印vector的内容  
+	cout << "返回的it位置(v2)：" << it - v2.begin() << endl;  
+	
+	cout << "========== remove_if ===========" << endl;  
+	v = {1, 2, 5, 4, 5, 5, 5, 8, 9, 10, 11, 12};   
+	it = remove_if(v.begin(), v.end(), cmp);  
+	printVector(v); //自定义函数，打印vector的内容  
+	cout << "返回的it位置(v)：" << it - v.begin() << endl;  
+	
+	cout << "========== remove_copy_if ===========" << endl;  
+	v = {1, 2, 5, 4, 5, 5, 5, 8, 9, 10, 11, 12};   
+	vector<int> v3(10);  
+	it = remove_copy_if(v.begin(), v.end(), v3.begin(), cmp);  
+	printVector(v3); //自定义函数，打印vector的内容  
+	cout << "返回的it位置(v3)：" << it - v3.begin() << endl;  
+	```  
+42. fill() 和 fill_n() 算法提供了一种为元素序列填入给定值的简单方式  
+	fill() 会填充整个序列； fill_n() 则以给定的迭代器为起始位置，为指定个数的元素设置值。  
+	```cpp  
+	vector<int> v(10);   
+	fill(v.begin(), v.end(), 5);  
+	vector<int> v2(10);  
+	fill_n(v2.begin(), 6, 5);  
+	```  
+43. generate 与 generate_n这两个算法如同一个"数据工厂"，它们通过一个生成器函数来创造数据，并填充到指定的容器范围内  
+	```cpp  
+	int func (){  
+		static int n = 0;  
+		n = n+2;  
+		return n;  
+	}  
+	vector<int> v(10);   
+	generate(v.begin(), v.end(), func);  
+	vector<int> v2(10);  
+	generate_n(v2.begin(), 6, func);  
+	```  
+44. transform() 可以将函数应用到序列的元素上，并将这个函数返回的值保存到另一个序列中，它返回的迭代器指向输出序列所保存的最后一个元素的下一个位置。  
+	```cpp  
+	int func (int n){  
+		return n*10;  
+	}  
+	string s = "Hello, World";   
+	transform(s.begin(), s.end(), s.begin(), ::tolower);  
+	  
+	vector<int> v = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};  
+	transform(v.begin(), v.end(), v.begin(), func);  
+	```  
+45. replace() 算法会用新的值来替换和给定值相匹配的元素。它的前两个参数是被处理序列的正向迭代器，第 3 个参数是被替换的值，第 4 个参数是新的值。  
+	replace_if() 会将使谓词返回 true 的元素替换为新的值。它的第 3 个参数是一个谓词，第 4 个参数是新的值。  
+	replace_copy() 算法和 replace() 做的事是一样的，但它的结果会被保存到另一个序列中，而不会改变原始序列。它的前两个参数是输入序列的正向迭代器，第 3 个参数是输入序列的开始迭代器，最后两个参数分别是要被替换的值和替换值。  
+	replace_copy_if() 和 replace_if() 算法是相同的，但它的结果会被保存到另一个序列中。它的前两个参数是输入序列的迭代器，第 3 个参数是输出序列的开始迭代器，最后两个参数分别是谓词和替换值  
+	```cpp  
+	cout << "================= replace =================" << endl;  
+	vector<int> v = {1, 2, 5, 4, 5, 6, 7, 5, 9, 10};  
+	replace(v.begin(), v.end(), 5, 500);  
+	printVector(v); //自定义函数，打印vector的内容  
+	  
+	cout << "================= replace_if =================" << endl;  
+	v = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};  
+	replace_if(v.begin(), v.end(), cmp, 600);  
+	printVector(v); //自定义函数，打印vector的内容  
+	  
+	cout << "================= replace_copy =================" << endl;  
+	v = {1, 2, 5, 4, 5, 6, 7, 5, 9, 10};  
+	vector<int> v2(10);  
+	replace_copy(v.begin(), v.end(), v2.begin(), 5, 700);  
+	printVector(v2); //自定义函数，打印vector的内容  
+		  
+	cout << "================= replace_if_copy =================" << endl;  
+	v = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};  
+	vector<int> v3(10);  
+	replace_copy_if(v.begin(), v.end(), v3.begin(), cmp, 800);  
+	printVector(v3); //自定义函数，打印vector的内容  
+	```  
